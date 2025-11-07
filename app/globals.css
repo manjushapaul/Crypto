@@ -1,26 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1A1A2E;
+  --foreground: #FFFFFF;
+  --card-background: #2C2C4A;
+  --card-background-blue: #2A2A4A;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B8B8D4;
+  --text-tertiary: #8B8BA7;
+  --bitcoin: #F7931A;
+  --ethereum: #627EEA;
+  --success: #10B981;
+  --danger: #EF4444;
+  --active-yellow: #ffe369;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-card-bg: var(--card-background);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-bitcoin: var(--bitcoin);
+  --color-ethereum: var(--ethereum);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-active-yellow: var(--active-yellow);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
+  
+  /* Border radius */
+  --radius-card: 16px;
+  
+  /* Gradients */
+  --gradient-card: linear-gradient(135deg, #8A2BE2 0%, #FF69B4 50%, #FFA500 100%);
+  --gradient-blue: linear-gradient(180deg, #3B82F6 0%, #1E40AF 100%);
+  
+  /* Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Dark theme is default, no media query needed */
+
+body {
+  background: #eaecff;
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+/* Shimmer animation for loading skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Smooth transitions for interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.shadow-card-inwards{
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 52%), 0 2px 4px -1px rgb(0 0 0 / 0%);
+  box-shadow: -7px 12px #00000000, var(--tw-inset-ring-shadow), 10px -13px #0000, var(--tw-ring-shadow), var(--tw-shadow);
+  border: solid 1px #00000017;
 }
