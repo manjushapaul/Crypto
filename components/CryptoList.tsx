@@ -26,7 +26,7 @@ export default function CryptoList({ cryptocurrencies }: CryptoListProps) {
       {/* Selected Crypto Chart Modal */}
       {selectedCrypto && (
         <div className="rounded-card border border-gray-200 bg-white p-6 shadow-card dark:border-gray-800 dark:bg-gray-900">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between ">
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-semibold text-[#1E293B] dark:text-gray-100">
                 {selectedCrypto.name} ({selectedCrypto.symbol.toUpperCase()})

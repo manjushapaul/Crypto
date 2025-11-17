@@ -46,7 +46,10 @@ export default function NavItem({
       </div>
 
       {/* Label */}
-      <span className="text-xs font-medium uppercase tracking-wide">
+      <span className={cn(
+        "text-xs uppercase tracking-wide",
+        isActive ? "font-bold" : "font-medium"
+      )}>
         {label}
       </span>
 

@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/context/UserContext";
 
 interface ProfileDropdownProps {
   avatarUrl?: string;
@@ -13,13 +15,27 @@ interface ProfileDropdownProps {
  * ProfileDropdown Component
  * Profile avatar with dropdown menu
  * Shows user options like Profile and Sign out
+ * 
+ * Now integrated with UserContext for real-time profile updates:
+ * - Automatically displays current user's name and initials
+ * - Updates immediately when profile is changed in Settings
+ * - Persists across page refreshes via localStorage
  */
 export default function ProfileDropdown({
   avatarUrl,
-  userName = "Mafruh Faruqi",
+  userName,
 }: ProfileDropdownProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Use global user context for real-time sync
+  const { user, getInitials } = useUser();
+  
+  // Use context user data, with fallback to props
+  const displayName = userName || user.name;
+  const displayAvatar = avatarUrl || user.avatar;
 
   // Generate initials-based SVG avatar
   const getInitialsAvatar = (name: string): string => {
@@ -35,8 +51,13 @@ export default function ProfileDropdown({
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   };
 
-  // Default avatar using initials
-  const defaultAvatar = getInitialsAvatar(userName);
+  // Only generate avatar on client to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Default avatar using initials from context
+  const defaultAvatar = mounted ? getInitialsAvatar(displayName) : "";
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -63,7 +84,7 @@ export default function ProfileDropdown({
       label: "Profile",
       icon: User,
       onClick: () => {
-        console.log("Navigate to Profile");
+        router.push("/profile");
         setIsOpen(false);
       },
     },
@@ -81,22 +102,27 @@ export default function ProfileDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-[#2a2a4a] focus:outline-none focus:ring-2 focus:ring-[#ffe369]/50"
+        className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors duration-200 hover:bg-[#2a2a4a] dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ffe369]/50 dark:focus:ring-blue-400/50"
         aria-label="Profile menu"
         aria-expanded={isOpen}
       >
         {/* Avatar */}
-        <div className="relative h-10 w-10 overflow-hidden rounded-full">
-          <img
-            src={avatarUrl || defaultAvatar}
-            alt={userName}
-            className="h-full w-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              // Fallback to initials-based SVG if external image fails
-              target.src = defaultAvatar;
-            }}
-          />
+        <div className="relative h-10 w-10 overflow-hidden rounded-full" suppressHydrationWarning>
+          {mounted ? (
+            <img
+              src={displayAvatar || defaultAvatar}
+              alt={`${displayName}'s profile`}
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                // Fallback to initials-based SVG if external image fails
+                target.src = defaultAvatar;
+              }}
+              suppressHydrationWarning
+            />
+          ) : (
+            <div className="h-full w-full bg-gray-400" />
+          )}
         </div>
 
         {/* Dropdown Arrow */}
@@ -114,10 +140,10 @@ export default function ProfileDropdown({
           <div className="p-2">
             <div className="mb-2 border-b border-gray-200 px-3 py-2 dark:border-gray-700">
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {userName}
+                {displayName}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                User Account
+                {user.email}
               </p>
             </div>
             {menuItems.map((item, index) => {
